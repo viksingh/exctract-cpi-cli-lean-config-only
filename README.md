@@ -21,6 +21,10 @@ Derived from the bundles: ECC Endpoints (adapter classification), Flow Chains
 resolved from the design-time configurations) and Credentials (credential, keystore
 and alias references).
 
+## Download
+
+A ready-built jar is attached to each [release](../../releases). It needs Java 17 or later.
+
 ## Build
 
 Requires Java 17+ and Maven.
@@ -29,6 +33,10 @@ Requires Java 17+ and Maven.
 mvn package
 # -> target/cpi-extract.jar (single runnable jar, about 4 MB)
 ```
+
+To publish a release, set the version in `pom.xml` and push a matching tag, for
+example `git tag v1.0.1 && git push origin v1.0.1`. The Release workflow builds
+the jar and attaches it.
 
 ## Run
 
