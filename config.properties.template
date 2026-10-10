@@ -1,0 +1,52 @@
+# ============================================================
+# SAP CPI Artifact Extractor (CLI) - Configuration File
+# ============================================================
+# Copy this file to config.properties and fill in your values.
+# Then run:
+#   java -jar cpi-extract.jar -c config.properties
+#
+# Every value can also be overridden on the command line with
+#   --set key=value
+# and the connection values with environment variables
+# (CPI_BASE_URL, CPI_OAUTH_CLIENT_SECRET, ...).
+# ============================================================
+
+# --- CPI Tenant Connection ---
+# Your CPI tenant management host (TMN) URL
+# Example: https://<tenant-id>.it-cpi018.cfapps.eu10.hana.ondemand.com
+cpi.base.url=
+
+# --- Authentication ---
+# Option 1: OAuth2 Client Credentials (Recommended for BTP)
+cpi.auth.type=oauth2
+cpi.oauth.token.url=
+cpi.oauth.client.id=
+cpi.oauth.client.secret=
+
+# Option 2: Basic Authentication (Legacy / Neo)
+# Uncomment the lines below and comment out the OAuth2 lines above
+# cpi.auth.type=basic
+# cpi.basic.username=
+# cpi.basic.password=
+
+# --- Export Settings (optional overrides) ---
+# xlsx, csv, json, all, or a comma-separated list
+# export.format=xlsx
+# export.output.dir=./output
+# export.filename.prefix=cpi_artifacts
+# export.filename.timestamp=true
+
+# --- Extraction Options (optional overrides) ---
+# extract.package.ids=PackageA,PackageB
+# extract.flows=true
+# extract.valuemappings=true
+# extract.configurations=true
+# extract.runtime.status=true
+# extract.bundles=true
+
+# --- HTTP Settings (optional overrides) ---
+# api.parallel.threads=4
+# http.connect.timeout.ms=30000
+# http.read.timeout.ms=60000
+# http.max.retries=3
+# http.retry.delay.ms=2000
