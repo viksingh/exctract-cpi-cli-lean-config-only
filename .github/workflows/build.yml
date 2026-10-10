@@ -1,0 +1,37 @@
+name: Build
+
+# Builds and smoke-tests the jar on every push to main and keeps it as a workflow artifact.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build
+        run: mvn -B -ntp package
+
+      - name: Smoke test
+        run: |
+          java -jar target/cpi-extract.jar --version
+          java -jar target/cpi-extract.jar --help > /dev/null
+          ls -l target/cpi-extract.jar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpi-extract
+          path: target/cpi-extract.jar
+          if-no-files-found: error
