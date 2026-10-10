@@ -1,9 +1,12 @@
 name: Release
 
-# Pushing a tag like v1.0.0 builds the jar with Maven and publishes it as a GitHub release.
+# Builds the jar with Maven and publishes it as a GitHub release named after the
+# version in pom.xml. Runs when a tag like v1.0.0 is pushed, or when started by
+# hand from the Actions tab (it then tags the commit it ran on).
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,11 +23,12 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Check tag matches pom version
+      - name: Resolve version
         run: |
-          POM_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-          if [ "v$POM_VERSION" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match pom version $POM_VERSION" >&2
+          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match pom version $VERSION" >&2
             exit 1
           fi
 
@@ -40,9 +44,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          JAR="cpi-extract-${GITHUB_REF_NAME#v}.jar"
+          JAR="cpi-extract-$VERSION.jar"
           cp target/cpi-extract.jar "$JAR"
           sha256sum "$JAR" > "$JAR.sha256"
-          gh release create "$GITHUB_REF_NAME" "$JAR" "$JAR.sha256" \
-            --title "cpi-extract ${GITHUB_REF_NAME#v}" \
+          gh release create "v$VERSION" "$JAR" "$JAR.sha256" \
+            --target "$GITHUB_SHA" \
+            --title "cpi-extract $VERSION" \
             --notes "Runnable jar (Java 17+): \`java -jar $JAR -c config.properties\`. See the README for options."

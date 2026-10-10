@@ -34,9 +34,9 @@ mvn package
 # -> target/cpi-extract.jar (single runnable jar, about 4 MB)
 ```
 
-To publish a release, set the version in `pom.xml` and push a matching tag, for
-example `git tag v1.0.1 && git push origin v1.0.1`. The Release workflow builds
-the jar and attaches it.
+To publish a release, set the version in `pom.xml`, then either push a matching
+tag (`git tag v1.0.1 && git push origin v1.0.1`) or run the Release workflow from
+the Actions tab. It builds the jar and attaches it to a release for that version.
 
 ## Run
 
