@@ -1,8 +1,9 @@
 name: Release
 
 # Builds the jar with Maven and publishes it as a GitHub release named after the
-# version in pom.xml. Runs when a tag like v1.0.0 is pushed, or when started by
-# hand from the Actions tab (it then tags the commit it ran on).
+# version in pom.xml. Runs when a tag like v1.0.0 is pushed or created with a
+# release, or when started by hand from the Actions tab (it then tags the commit
+# it ran on).
 on:
   push:
     tags: ['v*']
@@ -47,7 +48,12 @@ jobs:
           JAR="cpi-extract-$VERSION.jar"
           cp target/cpi-extract.jar "$JAR"
           sha256sum "$JAR" > "$JAR.sha256"
-          gh release create "v$VERSION" "$JAR" "$JAR.sha256" \
-            --target "$GITHUB_SHA" \
-            --title "cpi-extract $VERSION" \
-            --notes "Runnable jar (Java 17+): \`java -jar $JAR -c config.properties\`. See the README for options."
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            # release already exists (created in the GitHub UI or API): just attach the jar
+            gh release upload "v$VERSION" "$JAR" "$JAR.sha256" --clobber
+          else
+            gh release create "v$VERSION" "$JAR" "$JAR.sha256" \
+              --target "$GITHUB_SHA" \
+              --title "cpi-extract $VERSION" \
+              --notes "Runnable jar (Java 17+): \`java -jar $JAR -c config.properties\`. See the README for options."
+          fi
